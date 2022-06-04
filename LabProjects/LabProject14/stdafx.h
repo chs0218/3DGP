@@ -40,9 +40,24 @@ using namespace DirectX::PackedVector;
 using Microsoft::WRL::ComPtr;
 
 extern ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pData, UINT nBytes, D3D12_HEAP_TYPE d3dHeapType = D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATES d3dResourceStates = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, ID3D12Resource** ppd3dUploadBuffer = NULL);
+
+#define EPSILON 1.0e-10f
+inline bool IsZero(float fValue) { return((fabsf(fValue) < EPSILON)); }
+inline bool IsEqual(float fA, float fB) { return(::IsZero(fA - fB)); }
+inline float InverseSqrt(float fValue) { return 1.0f / sqrtf(fValue); }
+inline void Swap(float* pfS, float* pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT = fTemp; }
+
 //3차원 벡터의 연산 
 namespace Vector3
 {
+	//3-차원 벡터가 영벡터인 가를 반환하는 함수이다. 
+	inline bool IsZero(XMFLOAT3& xmf3Vector)
+	{
+		if (::IsZero(xmf3Vector.x) && ::IsZero(xmf3Vector.y) && ::IsZero(xmf3Vector.z))
+			return(true);
+		return(false);
+	}
+
 	inline XMFLOAT3 XMVectorToFloat3(XMVECTOR& xmvVector)
 	{
 		XMFLOAT3 xmf3Result;
@@ -157,6 +172,7 @@ namespace Vector4
 			XMLoadFloat4(&xmf4Vector2));
 		return(xmf4Result);
 	}
+	//4-차원 벡터와 스칼라(실수)의 곱을 반환하는 함수이다. 
 	inline XMFLOAT4 Multiply(float fScalar, XMFLOAT4& xmf4Vector)
 	{
 		XMFLOAT4 xmf4Result;
