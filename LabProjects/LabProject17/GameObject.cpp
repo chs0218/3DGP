@@ -1,25 +1,6 @@
 #include "GameObject.h"
 #include "Shader.h"
 
-CMaterial::CMaterial()
-{
-	m_xmf4Albedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-}
-CMaterial::~CMaterial()
-{
-	if (m_pShader)
-	{
-		m_pShader->ReleaseShaderVariables();
-		m_pShader->Release();
-	}
-}
-void CMaterial::SetShader(CShader* pShader)
-{
-	if (m_pShader) m_pShader->Release();
-	m_pShader = pShader;
-	if (m_pShader) m_pShader->AddRef();
-}
-
 CGameObject::CGameObject()
 {
 	XMStoreFloat4x4(&m_xmf4x4World, XMMatrixIdentity());
@@ -27,36 +8,26 @@ CGameObject::CGameObject()
 CGameObject::~CGameObject()
 {
 	if (m_pMesh) m_pMesh->Release();
-	if (m_pMaterial) m_pMaterial->Release();
+	if (m_pShader)
+	{
+		m_pShader->ReleaseShaderVariables();
+		m_pShader->Release();
+	}
 }
 
 void CGameObject::SetShader(CShader* pShader)
 {
-	if (!m_pMaterial)
-	{
-		m_pMaterial = new CMaterial();
-		m_pMaterial->AddRef();
-	}
-	if (m_pMaterial) m_pMaterial->SetShader(pShader);
+	if (m_pShader) m_pShader->Release();
+	m_pShader = pShader;
+	if (m_pShader) m_pShader->AddRef();
 }
-
 void CGameObject::SetMesh(CMesh* pMesh)
 {
 	if (m_pMesh) m_pMesh->Release();
 	m_pMesh = pMesh;
 	if (m_pMesh) m_pMesh->AddRef();
 }
-void CGameObject::SetMaterial(CMaterial* pMaterial)
-{
-	if (m_pMaterial) m_pMaterial->Release();
-	m_pMaterial = pMaterial;
-	if (m_pMaterial) m_pMaterial->AddRef();
-}
-void CGameObject::SetMaterial(UINT nReflection)
-{
-	if (!m_pMaterial) m_pMaterial = new CMaterial();
-	m_pMaterial->m_nReflection = nReflection;
-}
+
 void CGameObject::ReleaseUploadBuffers()
 {
 	//정점 버퍼를 위한 업로드 버퍼를 소멸시킨다. 
@@ -80,14 +51,9 @@ void CGameObject::Rotate(XMFLOAT3* pxmf3Axis, float fAngle)
 void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	OnPrepareRender();
-	if (m_pMaterial)
-	{
-		if (m_pMaterial->m_pShader)
-		{
-			m_pMaterial->m_pShader->Render(pd3dCommandList, pCamera);
-			m_pMaterial->m_pShader->UpdateShaderVariable(pd3dCommandList, &m_xmf4x4World);
-		}
-	}
+	//객체의 정보를 셰이더 변수(상수 버퍼)로 복사한다. 
+	UpdateShaderVariables(pd3dCommandList);
+	if (m_pShader) m_pShader->Render(pd3dCommandList, pCamera);
 	if (m_pMesh) m_pMesh->Render(pd3dCommandList);
 }
 
