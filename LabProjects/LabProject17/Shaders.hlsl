@@ -1,5 +1,3 @@
-#include "Light.hlsl"
-
 //게임 객체의 정보를 위한 상수 버퍼를 선언한다. 
 cbuffer cbGameObjectInfo : register(b0)
 {
@@ -11,8 +9,6 @@ cbuffer cbCameraInfo : register(b1)
 	matrix gmtxView : packoffset(c0);
 	matrix gmtxProjection : packoffset(c4);
 };
-
-
 //정점 셰이더의 입력을 위한 구조체를 선언한다. 
 struct VS_INPUT
 {
