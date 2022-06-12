@@ -1,0 +1,8 @@
+﻿  GameFramework.cpp
+D:\Visual Studio\Project\3DGP\LabProjects\LabProject16\GameFramework.cpp(330,70): warning C4244: '인수': 'WPARAM'에서 'DWORD'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  코드를 생성하고 있습니다.
+  3 of 364 functions ( 0.8%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    10 functions had inline decision re-evaluated but remain unchanged
+  코드를 생성했습니다.
+  LabProject16.vcxproj -> D:\Visual Studio\Project\3DGP\LabProjects\x64\Release\LabProject16.exe
